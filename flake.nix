@@ -41,18 +41,12 @@
             ];
           };
 
-          # settings.processes.pgweb = let
-          #   pgcfg = config.services.mysql.m1;
-          # in {
-          #   environment.PGWEB_DATABASE_URL = pgcfg.connectionURI {inherit dbName;};
-          #   command = pkgs.pgweb;
-          #   depends_on."m1".condition = "process_healthy";
-          # };
           settings.processes.test = {
             command = pkgs.writeShellApplication {
               name = "m1-test";
               runtimeInputs = [config.services.mysql.m1.package];
               text = ''
+                echo 'SELECT version();' | mariadb -h 127.0.0.1 ${dbName}
               '';
             };
             depends_on."m1".condition = "process_healthy";
